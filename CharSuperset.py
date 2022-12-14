@@ -1,7 +1,9 @@
 
-all_char_list = ['data/Chinese_common.txt', 'data/hiragana_AND_katakana_Japanese.txt',
+all_char_list = ['data/Chinese_common.txt']
+'''
+    , 'data/hiragana_AND_katakana_Japanese.txt',
                  'data/Hongkong_Chinese.txt', 'data/Kanji_Japanese_N1_N5.txt',
-                 'data/Korean_Hangul.txt', 'data/Korean_Hanja_high_school.txt']
+                 'data/Korean_Hangul.txt', 'data/Korean_Hanja_high_school.txt']'''
 
 dictionary_all_chars = {}
 

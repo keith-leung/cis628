@@ -2,7 +2,7 @@ import numpy as np
 from math import log, gcd
 import sys
 from sympy import Poly, symbols
-from NTRU.NTRUutil import *
+from NTRU_python.NTRU.NTRUutil import *
 
 class NTRUdecrypt:
 
@@ -267,6 +267,11 @@ class NTRUdecrypt:
         if np.mod(len(Me),self.N)!=0:
             sys.exit("\n\nERROR : Input decrypt string is not integer multiple of N\n\n")
 
+        import time
+        # store starting time
+        begin = time.time()
+        print(f"Now start the NTRUdecrypt is {begin}")
+
         # Now decrypt each block, appending to the message string
         Marr = np.array([],dtype=int)
         for D in range(len(Me)//self.N):
@@ -275,3 +280,6 @@ class NTRUdecrypt:
         # And return the string decrypted
         self.M = bit2str(Marr)
     
+        end = time.time()
+        # total time taken
+        print(f"Total runtime of the NTRUdecrypt is {end - begin}")

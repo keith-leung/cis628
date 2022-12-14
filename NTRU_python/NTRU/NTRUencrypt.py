@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 from sympy import Poly, symbols
-from NTRU.NTRUutil import *
+from NTRU_python.NTRU.NTRUutil import *
 
 class NTRUencrypt:
     """
@@ -110,7 +110,12 @@ class NTRUencrypt:
         # We have to have read the public key before starting
         if self.readKey == False:
             sys.exit("Error : Not read the public key file, so cannot encrypt")
-        
+
+        import time
+        # store starting time
+        begin = time.time()
+        print(f"Now start the NTRUencrypt is {begin}")
+
         # Create a binary array of the input string, and pad it with leading zeros
         # such that its length is a multiple of N
         bM = str2bit(M)
@@ -126,4 +131,6 @@ class NTRUencrypt:
             self.encrypt()                            # Encrypt the saved message
             self.Me = self.Me + arr2str(self.e) + " " # Append encrypted to string
 
-        
+        end = time.time()
+        # total time taken
+        print(f"Total runtime of the NTRUencrypt is {end - begin}")

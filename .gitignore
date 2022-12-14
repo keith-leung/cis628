@@ -127,3 +127,19 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/results_cipher_text_JapaneseArticle.txt
+/results_cipher_text_LongTextWithKeywords.txt
+/results_cipher_text_SimpleText.txt
+/results_plain_text_JapaneseArticle.txt
+/results_plain_text_LongTextWithKeywords.txt
+/results_plain_text_SimpleText.txt
+/simple_key.priv
+/simple_key.pub
+
+.idea/
+/jpn_article_key.priv
+/jpn_article_key.pub
+/keyLattice.priv
+/keyLattice.pub
+/long_text_key.priv
+/long_text_key.pub

@@ -1,6 +1,6 @@
 from collections import Counter
 import random
-
+import sys
 
 # Build a customized full character range of CJK chars
 ## 1. Read all the chars into a dictionary
@@ -18,14 +18,17 @@ import random
 
 
 def generate_key(dic_cjk, plainText):
-    for c in plainText:
-        if c in dic_cjk.keys():
-            dic_cjk[c] += 1
+    for line in plainText:
+        for c in line:
+            if c in dic_cjk.keys():
+                dic_cjk[c] += 1
 
+    key_space_range = len(dic_cjk.keys())
     key_set = {}
-    for key in dic_cjk.keys:
+    for key in dic_cjk.keys():
         if dic_cjk[key] > 0:
-            key_set[key]=random.randint()
+            # shift number of occurrence plus a random number
+            key_set[key]= (dic_cjk[key] + random.randint(0, key_space_range)) % key_space_range
 
     return key_set
 
@@ -40,38 +43,56 @@ def encrypt(key_set, dic_cjk, plainText):
         current += 1
 
     cipherText = ''
+    cipherMap = {}
 
-    for c in plainText:
-        if c in key_set.keys():
-            shift = key_set[c]
-            originPlace = indexed_key_table[c]
-            shifted_char_index = (originPlace + shift) % length
-            shifted_char = key_table[shifted_char_index]
-            print(shifted_char)
-            cipherText += shifted_char
+    for line in plainText:
+        for c in line:
+            if c in key_set.keys():
+                shift = key_set[c]
+                originPlace = indexed_key_table[c]
+                shifted_char_index = (originPlace + shift) % length
+                shifted_char = key_table[shifted_char_index]
+                cipherMap[shifted_char] = shift
+                cipherText += shifted_char
+            else:
+                # do not change
+                cipherText += c
+
+    cipherTableMap = []
+    for item in key_table:
+        if item in cipherMap.keys():
+            cipherTableMap.append((item, cipherMap[item]))
         else:
-            # do not change
-            cipherText += c
+            cipherTableMap.append((item,0))
 
-    return cipherText, key_table
+    return cipherText, cipherTableMap
 
 
-def decrypt(key_table, dic_cjk, cipherText):
+def decrypt(key_table, cipherText):
     plainText = ''
     length = len(key_table)
-    key_set = {} # restore keyset
+    cipherMap = {}
+    for item in key_table:
+        cipherMap[item[0]] = item[1]
+    codeTablePosition = {}
+    current = 0
+    for item in key_table:
+        codeTablePosition[item[0]] = current
+        current += 1
 
-    for c in cipherText:
-        if c in key_set.keys():
-            shift = key_set[c]
-            shifted_place = key_table[c] - shift
-            if shifted_place < 0:
-                shifted_place += length
-            shifted_char = key_table[shifted_place]
-            print(shifted_char)
-            plainText += shifted_char
-        else:
-            # do not change
-            plainText += c
+    for line in cipherText:
+        for c in line:
+            if c in cipherMap.keys():
+                shift = cipherMap[c]
+                codePosition = codeTablePosition[c]
+                shifted_place = codePosition - shift
+                if shifted_place < 0:
+                    shifted_place += length
+                shifted_char = key_table[shifted_place][0]
+                #print(shifted_char)
+                plainText += shifted_char
+            else:
+                # do not change
+                plainText += c
 
     return plainText

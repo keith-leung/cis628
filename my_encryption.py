@@ -1,8 +1,9 @@
 import os
 import uuid
 import yaml
-
+import json
 import custom_cjk_vigenere_cipher
+import my_utils
 from NTRU_python.NTRU.NTRUencrypt import NTRUencrypt
 from NTRU_python.NTRU.NTRUdecrypt import NTRUdecrypt
 from NTRU_python.NTRU.NTRUutil import *
@@ -46,15 +47,27 @@ def encrypt(keyLattice, plainText):
     ## 4. Pack the cipher text and encrypted key to a file
     dic_cjks = read_all_cjk_chars_from_config()
     key_for_custom_v = custom_cjk_vigenere_cipher.generate_key(dic_cjks, plainText)
-    cipher_text = custom_cjk_vigenere_cipher.encrypt(key_for_custom_v, dic_cjks, plainText)
+    cipher_text, codetable = custom_cjk_vigenere_cipher.encrypt(key_for_custom_v, dic_cjks, plainText)
 
     E = NTRUencrypt()
     # And read the public key
-    E.readPub('keyLattice' + ".pub")
-    encrypted_lattice_key = E.encryptString(key_for_custom_v)
+    #E.readPub('keyLattice' + ".pub")
+    E.readPub(keyLattice)
+    str_key_for_custom_v = json.dumps(codetable)
+
+    #DEBUG MODE
+    if my_utils.is_debug_mode():
+    #E.encryptString(str_key_for_custom_v)
+        print('DEBUG MODE: Lattice-based encryption is skipped')
+        encrypted_lattice_key = str_key_for_custom_v
+    else:
+        E.encryptString(str_key_for_custom_v)
+        encrypted_lattice_key = E.Me
+    # END DEBUG
+    # str_code_table = json.dumps(codetable)
 
     result = cipher_text + '\r' + '-----BEGIN LATTICE PRIVATE KEY-----' + '\r' + encrypted_lattice_key \
-             + '\r' + '-----END LATTICE PRIVATE KEY-----'
+             + '\r' + '-----END LATTICE PRIVATE KEY-----' #+ '\r' + str_code_table
 
     return result
 
@@ -71,27 +84,37 @@ def decrypt(keyLattice, cipherText):
     :param cipherText:
     :return:
     '''
-    ## 1. Read Vigenere cipher key by content, which is considered as randomness
-    ## 2. Vigenere cipher with this key
-    ## 3. Lattice encrypt the Vigenere cipher key
-    ## 4. Pack the cipher text and encrypted key to a file
-    dic_cjks = read_all_cjk_chars_from_config()
-    key_for_custom_v = custom_cjk_vigenere_cipher.generate_key(dic_cjks, plainText)
-    cipher_text = custom_cjk_vigenere_cipher.encrypt(key_for_custom_v, dic_cjks, plainText)
+    ## 1. Read sections from cipher text
+    ## 2. Decrypt Vigenere cipher with Lattice key
+    ## 3. Decrypt encrypted cipher section Vigenere cipher key
+    ## 4. return plain text
 
+    if cipherText.index('-----BEGIN LATTICE PRIVATE KEY-----') > 0 \
+        and cipherText.index('-----END LATTICE PRIVATE KEY-----') > 0:
+        pass
+    else:
+        return cipherText
 
+    cipherSection = cipherText.split('\r-----BEGIN LATTICE PRIVATE KEY-----\r')[0]
+    keySection = cipherText.split('\r-----BEGIN LATTICE PRIVATE KEY-----\r')[1].split('\r-----END LATTICE PRIVATE KEY-----')[0]
+    #codeTableSection = cipherText.split('\r-----BEGIN LATTICE PRIVATE KEY-----\r')[1].split('\r-----END LATTICE PRIVATE KEY-----\r')[1]
+
+    #dic_cjks = json.loads(codeTableSection)
 
     D = NTRUdecrypt()
-    to_decrypt = unbox_key_lattice(cipherText)
     # And read the public key
-    D.readPriv('keyLattice' + ".priv")
-    D.decryptString(to_decrypt)
-    key_for_custom_v = D.M
-
-    result = cipher_text + '\r' + '-----BEGIN LATTICE PRIVATE KEY-----' + '\r' + encrypted_lattice_key \
-             + '\r' + '-----END LATTICE PRIVATE KEY-----'
-
-    return result
+    D.readPriv(keyLattice +".priv")
+    # DEBUG Mode
+    if my_utils.is_debug_mode():
+        print('DEBUG MODE: Lattice-based decryption is skipped')
+        key_for_custom_v = keySection
+    else:
+        D.decryptString(keySection)
+        key_for_custom_v = D.M
+    # END DEBUG mode
+    key_table = json.loads(key_for_custom_v)
+    plain_text = custom_cjk_vigenere_cipher.decrypt(key_table, cipherSection)
+    return plain_text
 
 
 def unbox_key_lattice(cipherText):
@@ -101,7 +124,7 @@ def unbox_key_lattice(cipherText):
     key_for_lattice = ''
     for l in lines:
         if l == '-----BEGIN LATTICE PRIVATE KEY-----':
-
+            break
 
     pass
 
@@ -152,11 +175,12 @@ def read_all_cjk_chars_from_config():
 
     cjk_dict = {}
     for f in file_names:
-        with open('data/' + f) as file:
-            c = file.readline()
-            if c is not None and c != '' and c.strip() != '':
-                char = c.strip()
-                cjk_dict[char] = 0
+        with open('data/' + f, encoding="utf8") as file:
+            content = file.readlines()
+            for c in content:
+                if c is not None and c != '' and c.strip() != '':
+                    char = c.strip()
+                    cjk_dict[char] = 0
 
     return cjk_dict
 
