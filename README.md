@@ -11,7 +11,7 @@ This repository creates an application that combines the lattice-based encryptio
 ## Required packages
 please install the packages with
 ```shell
-pip -r requirements.txt
+pip install -r requirements.txt
 ```
 requirements.txt resides in the working directory
 

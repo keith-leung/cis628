@@ -152,4 +152,5 @@ if __name__ == "__main__":
     else:
         encrypt()
         decrypt()
-    readline()
+
+    value = input("Program finished, press any key to exit......\n")
