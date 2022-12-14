@@ -1,0 +1,16 @@
+CJK:
+  - Chinese_common.txt
+  - hiragana_AND_katakana_Japanese.txt
+  - Hongkong_Chinese.txt
+  - Kanji_Japanese_N1_N5.txt
+  - Korean_Hangul.txt
+  - Korean_Hanja_high_school.txt
+Sensitive:
+  - Sensitive_anti_corruption.txt
+  - Sensitive_custom.txt
+  - Sensitive_livelihood.txt
+  - Sensitive_reactionary.txt
+TestCase:
+  - SimpleText.txt
+  - LongTextWithKeywords.txt
+  - JapaneseArticle.txt
