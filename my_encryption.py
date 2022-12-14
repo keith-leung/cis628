@@ -74,8 +74,42 @@ def encrypt(keyLattice, plainText):
 
 '''
 '''
+def replace_sensitive(text):
+    file_names = []
+    with open("config.yaml", "r") as yamlfile:
+        data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+        for key, value in data.items():
+            if key == 'Sensitive':
+                print(key, ":", value)
+                file_names = value
 
+    sensitive_dict = {}
+    for f in file_names:
+        with open('data/' + f, encoding="utf8") as file:
+            content = file.readlines()
+            for line in content:
+                if line.__contains__('|'):
+                    splited = line.split('|')
+                    sensitive_dict[splited[0].strip()] = splited[1].strip()
+                else:
+                    word = line.strip()
+                    sensitive_dict[word] = '*' * len(word)
 
+    from py_aho_corasick import py_aho_corasick
+
+    # keywords only
+    A = py_aho_corasick.Automaton(list(sensitive_dict.keys()))
+
+    #A = py_aho_corasick.Automaton(['透视眼', '透视', '透视镜'])
+    text2 = []
+    for line in text:
+        results = A.get_keywords_found(line)
+        results = results[::-1]
+        for idx, k, v in results:
+            line = line[:idx] + sensitive_dict[k] + line[idx+len(k):]
+        text2.append(line)
+
+    return text2
 
 
 def decrypt(keyLattice, cipherText):
@@ -89,8 +123,8 @@ def decrypt(keyLattice, cipherText):
     ## 3. Decrypt encrypted cipher section Vigenere cipher key
     ## 4. return plain text
 
-    if cipherText.index('-----BEGIN LATTICE PRIVATE KEY-----') > 0 \
-        and cipherText.index('-----END LATTICE PRIVATE KEY-----') > 0:
+    if cipherText.__contains__('-----BEGIN LATTICE PRIVATE KEY-----') \
+        and cipherText.__contains__('-----END LATTICE PRIVATE KEY-----') :
         pass
     else:
         return cipherText

@@ -20,6 +20,12 @@ def encrypt_and_decrypt_simple():
     5. make a copy of the result and show
     :return:
     '''
+    all_cases = my_utils.get_all_test_cases()
+    if 'SimpleText.txt' not in all_cases:
+        print("Test case 1 SimpleText.txt skipped. \n")
+        return
+
+    print("Now start Test case 1: data/SimpleText.txt encryption and decryption. \n")
 
     # read plain text
     plaintext = my_utils.read_to_end('data/SimpleText.txt')
@@ -42,10 +48,17 @@ def encrypt_and_decrypt_simple():
 
     my_utils.write_to_file('results_plain_text_SimpleText.txt', resultPlainText)
 
+    print("Now Test case 1 finished. All related files are generated. \n\n")
     pass
 
 
 def encrypt_and_decrypt_LongWithKeywords():
+    all_cases = my_utils.get_all_test_cases()
+    if 'LongTextWithKeywords.txt' not in all_cases:
+        print("Test case 2 LongTextWithKeywords.txt skipped. \n")
+        return
+
+    print("Now start Test case 2: data/LongTextWithKeywords.txt encryption and decryption. \n")
     # read plain text
     plaintext = my_utils.read_to_end('data/LongTextWithKeywords.txt')
     keyLattice = 'long_text_key'
@@ -59,6 +72,8 @@ def encrypt_and_decrypt_LongWithKeywords():
     N2 = NTRUdecrypt()
     N2.readPriv(keyLattice + ".priv")
 
+    plaintext = my_encryption.replace_sensitive(plaintext)
+
     ciphertext = my_encryption.encrypt(keyLattice + ".pub", plaintext)
 
     my_utils.write_to_file('results_cipher_text_LongTextWithKeywords.txt', ciphertext)
@@ -67,10 +82,17 @@ def encrypt_and_decrypt_LongWithKeywords():
 
     my_utils.write_to_file('results_plain_text_LongTextWithKeywords.txt', resultPlainText)
 
+    print("Now Test case 2 finished. All related files are generated. \n\n")
     pass
 
 
 def encrypt_and_decrypt_JapaneseArticle():
+    all_cases = my_utils.get_all_test_cases()
+    if 'JapaneseArticle.txt' not in all_cases:
+        print("Test case 3 JapaneseArticle.txt skipped. \n")
+        return
+
+    print("Now start Test case 3: data/JapaneseArticle.txt encryption and decryption. \n")
     plaintext = my_utils.read_to_end('data/JapaneseArticle.txt')
     keyLattice = 'jpn_article_key'
     N1 = NTRUdecrypt()
@@ -91,6 +113,7 @@ def encrypt_and_decrypt_JapaneseArticle():
 
     my_utils.write_to_file('results_plain_text_JapaneseArticle.txt', resultPlainText)
 
+    print("Now Test case 3 finished. All related files are generated. \n\n")
     pass
 
 
@@ -129,3 +152,4 @@ if __name__ == "__main__":
     else:
         encrypt()
         decrypt()
+    readline()

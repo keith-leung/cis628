@@ -1,4 +1,4 @@
-IsDebug: True
+IsDebug: False
 CJK:
   - Chinese_common.txt
   - hiragana_AND_katakana_Japanese.txt

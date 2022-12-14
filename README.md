@@ -15,10 +15,24 @@ pip -r requirements.txt
 ```
 requirements.txt resides in the working directory
 
+## Project Structure
+### Metadata 
+Folder data contains:
+* the whole CJK character dataset 
+* sensitive keyword dataset [Sensitive_***.txt]
+### NTRU
+An implementation of lattice-based encryption
+### Configuration file
+config.yaml, which is a yaml configuration file, contains metadata lists. Adding or removing items in the lists can change the metadata. 
+
 # Run and Test
-**CAUTION: Lattice-based encryption/decryption takes a long-running time (several minutes), please be patient.**
+**CAUTION: Lattice-based encryption/decryption takes a long-running time (10+ minutes for encryption, 16+ minutes for decryption) on every file, please be patient.**
+Or you can remove the test case from the config.yaml file, then the related test cases will skip. 
 ## Run with command line
-```
+First, please clone or download the project.
+Then: 
+```shell
+python main.py
 ```
 ## Debug Mode
 Due to the long-running time of Lattice-based encryption/decryption by NTRU, setting the code to debug mode can skip the lattice-based encryption, which can save a lot of testing time.
@@ -33,22 +47,13 @@ The embedded test cases are:
 ```shell
 python main.py
 ```
-Without sending any parameters, the program will automatically run all the embedded test cases.
+**Due to very limited development time, this project only provides a very limited option to run, which is run all embedded test cases.**
+But changing the files:
+* LongTextWithKeywords.txt
+* JapaneseArticle.txt
+* SimpleText.txt
 
-### Simple Text Encryption and Decryption
-```shell
-python main.py -t 1
-```
-
-### Long Text Encryption and Decryption
-```shell
-python main.py -t 2
-```
-
-### Japanese Article Encryption and Decryption
-```shell
-python main.py -t 3
-```
+in data/ folder can make the program run with different articles. 
 
 # Acknowledgement
 Many thanks NTRU_Python https://github.com/pointedsphere/NTRU_python

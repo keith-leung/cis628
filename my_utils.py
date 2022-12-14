@@ -21,3 +21,12 @@ def is_debug_mode():
                 return True
 
     return False
+
+def get_all_test_cases():
+    with open("config.yaml", "r") as yamlfile:
+        data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+        for key, value in data.items():
+            if key == 'TestCase' and bool(value):
+                return value
+
+    return []
