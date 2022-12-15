@@ -28,6 +28,7 @@ config.yaml, which is a yaml configuration file, contains metadata lists. Adding
 # Run and Test
 **CAUTION: Lattice-based encryption/decryption takes a long-running time (10+ minutes for encryption, 16+ minutes for decryption) on every file, please be patient.**
 Or you can remove the test case from the config.yaml file, then the related test cases will skip. 
+Strongly recommend that only try one test case with NTRY lattice-based encryption.
 ## Run with command line
 First, please clone or download the project.
 Then: 
